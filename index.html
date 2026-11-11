@@ -77,196 +77,79 @@
     <p>Equipment Borrowing & Returning System</p>
   </header>
 
-  <!-- 頁面切換 -->
   <nav class="tabs">
-    <button class="tab active"
-      id="tabBorrow"
-      onclick="showPage('borrow')">
-      設備借用／歸還
-    </button>
-
-    <button class="tab"
-      id="tabHistory"
-      onclick="showPage('history')">
-      借還紀錄
-    </button>
+    <button class="tab active" id="tabBorrow" onclick="showPage('borrow')">設備借用／歸還</button>
+    <button class="tab" id="tabHistory" onclick="showPage('history')">借還紀錄</button>
   </nav>
 
   <main>
-
-    <!-- 借還頁面 -->
     <section class="page active" id="borrowPage">
-
       <div class="card">
         <h2>設備借還操作</h2>
 
         <div class="filters" style="margin-bottom:12px">
-          <button class="filter active"
-            id="borrowMode"
-            onclick="setMode('borrow')">
-            借用設備
-          </button>
-
-          <button class="filter"
-            id="returnMode"
-            onclick="setMode('return')">
-            歸還設備
-          </button>
+          <button class="filter active" id="borrowMode" onclick="setMode('borrow')">借用設備</button>
+          <button class="filter" id="returnMode" onclick="setMode('return')">歸還設備</button>
         </div>
 
-        <label for="personName" id="nameLabel">
-          借用人姓名
-        </label>
-
-        <input
-          id="personName"
-          maxlength="50"
-          placeholder="請輸入借用人姓名"
-          autocomplete="name"
-        >
+        <label for="personName" id="nameLabel">借用人姓名</label>
+        <input id="personName" maxlength="50" placeholder="請輸入借用人姓名" autocomplete="name">
 
         <label for="equipmentSelect">選擇設備</label>
-
         <select id="equipmentSelect" onchange="selectEquipment()">
           <option value="">請選擇設備</option>
         </select>
 
         <label for="equipmentId">設備編號</label>
+        <input id="equipmentId" placeholder="掃描 QR Code 或手動輸入設備編號">
 
-        <input
-          id="equipmentId"
-          placeholder="掃描 QR Code 或手動輸入設備編號"
-        >
-
-        <button
-          class="primary"
-          id="submitBtn"
-          onclick="submitEquipment()">
-          確認借用
-        </button>
+        <button class="primary" id="submitBtn" onclick="submitEquipment()">確認借用</button>
 
         <div class="scan-row">
-          <button class="secondary"
-            id="startBtn"
-            onclick="startScanner()">
-            開啟 QR Code 掃描
-          </button>
-
-          <button class="secondary"
-            id="stopBtn"
-            onclick="stopScanner()"
-            disabled>
-            關閉掃描
-          </button>
+          <button class="secondary" id="startBtn" onclick="startScanner()">開啟 QR Code 掃描</button>
+          <button class="secondary" id="stopBtn" onclick="stopScanner()" disabled>關閉掃描</button>
         </div>
 
         <div id="reader"></div>
         <div id="message" class="message"></div>
       </div>
 
-      <!-- 設備資訊 -->
       <div class="card">
         <h2>設備資訊</h2>
-
         <div class="info-grid">
-
-          <div class="info-item">
-            <div class="info-label">設備編號</div>
-            <div class="info-value" id="infoId">---</div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-label">設備名稱</div>
-            <div class="info-value" id="infoName">---</div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-label">廠牌</div>
-            <div class="info-value" id="infoBrand">---</div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-label">目前狀態</div>
-            <div class="info-value" id="infoStatus">---</div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-label">操作人</div>
-            <div class="info-value" id="infoPerson">---</div>
-          </div>
-
-          <div class="info-item">
-            <div class="info-label">操作時間</div>
-            <div class="info-value" id="infoTime">---</div>
-          </div>
-
+          <div class="info-item"><div class="info-label">設備編號</div><div class="info-value" id="infoId">---</div></div>
+          <div class="info-item"><div class="info-label">設備名稱</div><div class="info-value" id="infoName">---</div></div>
+          <div class="info-item"><div class="info-label">廠牌</div><div class="info-value" id="infoBrand">---</div></div>
+          <div class="info-item"><div class="info-label">目前狀態</div><div class="info-value" id="infoStatus">---</div></div>
+          <div class="info-item"><div class="info-label">操作人</div><div class="info-value" id="infoPerson">---</div></div>
+          <div class="info-item"><div class="info-label">操作時間</div><div class="info-value" id="infoTime">---</div></div>
         </div>
       </div>
     </section>
 
-    <!-- 借還紀錄頁面 -->
     <section class="page" id="historyPage">
-
       <div class="card">
-
         <div class="toolbar">
           <h2>借還紀錄</h2>
-
-          <button class="filter" onclick="loadHistory()">
-            ↻ 重新整理
-          </button>
+          <button class="filter" onclick="loadHistory()">↻ 重新整理</button>
         </div>
 
-        <!-- 統計 -->
         <div class="stats">
-
-          <div class="stat">
-            紀錄總筆數
-            <strong id="totalCount">0</strong>
-          </div>
-
-          <div class="stat">
-            借出中
-            <strong id="outstandingCount">0</strong>
-          </div>
-
-          <div class="stat">
-            已歸還
-            <strong id="returnedCount">0</strong>
-          </div>
-
+          <div class="stat">紀錄總筆數<strong id="totalCount">0</strong></div>
+          <div class="stat">借出中<strong id="outstandingCount">0</strong></div>
+          <div class="stat">已歸還<strong id="returnedCount">0</strong></div>
         </div>
 
-        <!-- 篩選 -->
         <div class="toolbar">
-
           <div class="filters">
-            <button class="filter active"
-              id="allFilter"
-              onclick="setHistoryFilter('all')">
-              全部紀錄
-            </button>
-
-            <button class="filter"
-              id="outFilter"
-              onclick="setHistoryFilter('outstanding')">
-              尚未歸還
-            </button>
+            <button class="filter active" id="allFilter" onclick="setHistoryFilter('all')">全部紀錄</button>
+            <button class="filter" id="outFilter" onclick="setHistoryFilter('outstanding')">尚未歸還</button>
           </div>
-
-          <input
-            id="historySearch"
-            style="max-width:260px"
-            placeholder="搜尋設備／姓名／編號"
-            oninput="renderHistory()"
-          >
-
+          <input id="historySearch" style="max-width:260px" placeholder="搜尋設備／姓名／編號" oninput="renderHistory()">
         </div>
 
-        <!-- 紀錄表格 -->
         <div class="table-wrap">
           <table>
-
             <thead>
               <tr>
                 <th>設備編號</th>
@@ -279,30 +162,22 @@
                 <th>狀態</th>
               </tr>
             </thead>
-
             <tbody id="historyBody">
-              <tr>
-                <td colspan="8" class="empty">
-                  正在載入紀錄...
-                </td>
-              </tr>
+              <tr><td colspan="8" class="empty">正在載入紀錄...</td></tr>
             </tbody>
-
           </table>
         </div>
-
       </div>
     </section>
-
   </main>
 
-  <footer>
-    設備 QR Code 借還管理系統
-  </footer>
-
+  <footer>設備 QR Code 借還管理系統</footer>
 </div>
 
 <script>
+  // ⚠️ 請填入您發布的 GAS 網頁應用程式 URL（/exec 結尾）
+  const GAS_API_URL = "https://script.google.com/macros/s/您的部署ID/exec";
+
   let currentMode = "borrow";
   let scanner = null;
   let scannerRunning = false;
@@ -312,518 +187,258 @@
   let historyFilter = "all";
   let lastScanTime = 0;
 
-  // 呼叫 GAS 後端函式
-  function gasCall(functionName, ...args) {
-
-    return new Promise((resolve, reject) => {
-
-      if (
-        typeof google === "undefined" ||
-        !google.script ||
-        !google.script.run
-      ) {
-        reject(new Error(
-          "請使用 GAS 部署的網頁應用程式網址開啟本系統。"
-        ));
-        return;
-      }
-
-      const runner = google.script.run
-        .withSuccessHandler(resolve)
-        .withFailureHandler(err => {
-          reject(new Error(
-            err && err.message ? err.message : String(err)
-          ));
-        });
-
-      runner[functionName](...args);
-    });
-  }
-
-  // 切換頁面
-  function showPage(page) {
-
-    document.querySelectorAll(".page")
-      .forEach(el => el.classList.remove("active"));
-
-    document.querySelectorAll(".tab")
-      .forEach(el => el.classList.remove("active"));
-
-    document.getElementById(page + "Page")
-      .classList.add("active");
-
-    document.getElementById(
-      page === "borrow" ? "tabBorrow" : "tabHistory"
-    ).classList.add("active");
-
-    if (page === "history") {
-      loadHistory();
+  // 使用標準 fetch 與 GAS API 通訊
+  async function apiCall(payload) {
+    if (GAS_API_URL.includes("您的部署ID")) {
+      throw new Error("請先在 index.html 中設定有效的 GAS_API_URL。");
     }
+
+    const response = await fetch(GAS_API_URL, {
+      method: "POST",
+      mode: "cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避免 CORS 預檢限制
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error("網路請求失敗，狀態碼：" + response.status);
+    }
+
+    return await response.json();
   }
 
-  // 切換借用或歸還
+  function showPage(page) {
+    document.querySelectorAll(".page").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(el => el.classList.remove("active"));
+    document.getElementById(page + "Page").classList.add("active");
+    document.getElementById(page === "borrow" ? "tabBorrow" : "tabHistory").classList.add("active");
+    if (page === "history") loadHistory();
+  }
+
   function setMode(mode) {
-
     if (processing) return;
-
     currentMode = mode;
-
-    document.getElementById("borrowMode")
-      .classList.toggle("active", mode === "borrow");
-
-    document.getElementById("returnMode")
-      .classList.toggle("active", mode === "return");
-
-    document.getElementById("nameLabel").textContent =
-      mode === "borrow" ? "借用人姓名" : "歸還人姓名";
-
-    document.getElementById("personName").placeholder =
-      mode === "borrow"
-        ? "請輸入借用人姓名"
-        : "請輸入歸還人姓名";
+    document.getElementById("borrowMode").classList.toggle("active", mode === "borrow");
+    document.getElementById("returnMode").classList.toggle("active", mode === "return");
+    document.getElementById("nameLabel").textContent = mode === "borrow" ? "借用人姓名" : "歸還人姓名";
+    document.getElementById("personName").placeholder = mode === "borrow" ? "請輸入借用人姓名" : "請輸入歸還人姓名";
 
     const btn = document.getElementById("submitBtn");
-
-    btn.textContent =
-      mode === "borrow" ? "確認借用" : "確認歸還";
-
+    btn.textContent = mode === "borrow" ? "確認借用" : "確認歸還";
     btn.classList.toggle("return", mode === "return");
 
     showMessage("", "");
-
     updateEquipmentOptions();
   }
 
-  // 顯示訊息
   function showMessage(message, type) {
-
     const el = document.getElementById("message");
-
     el.textContent = message;
     el.className = "message";
-
-    if (message) {
-      el.classList.add(type || "info");
-    }
+    if (message) el.classList.add(type || "info");
   }
 
-  // 避免 HTML 注入
   function escapeHTML(value) {
-
-    return String(value == null ? "" : value)
-      .replace(/[&<>"']/g, c => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[c]));
+    return String(value == null ? "" : value).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    }[c]));
   }
 
-  // 載入初始資料
   async function loadInitialData() {
-
     try {
-
-      const result = await gasCall("getInitialData");
-
-      if (!result || !result.success) {
-        throw new Error(
-          result ? result.message : "載入失敗"
-        );
-      }
+      const result = await apiCall({ action: "getInitialData" });
+      if (!result || !result.success) throw new Error(result ? result.message : "載入失敗");
 
       equipmentList = result.equipment || [];
       historyList = result.records || [];
-
       updateEquipmentOptions();
       renderHistory();
       updateStats();
-
     } catch (err) {
-
       showMessage(err.message, "error");
-
     }
   }
 
-  // 更新設備下拉選單
   function updateEquipmentOptions() {
-
     const select = document.getElementById("equipmentSelect");
+    const current = document.getElementById("equipmentId").value.trim();
+    const filtered = equipmentList.filter(e => currentMode === "borrow" ? e.status === "可借用" : e.status === "借出中");
 
-    const current = document
-      .getElementById("equipmentId")
-      .value.trim();
-
-    const filtered = equipmentList.filter(e =>
-      currentMode === "borrow"
-        ? e.status === "可借用"
-        : e.status === "借出中"
-    );
-
-    select.innerHTML =
-      '<option value="">請選擇設備</option>' +
+    select.innerHTML = '<option value="">請選擇設備</option>' +
       filtered.map(e => `
         <option value="${escapeHTML(e.id)}">
-          ${escapeHTML(e.id)}｜
-          ${escapeHTML(e.equipmentName)}｜
-          ${escapeHTML(e.brand)}
-          （${escapeHTML(e.status)}）
+          ${escapeHTML(e.id)}｜${escapeHTML(e.equipmentName)}｜${escapeHTML(e.brand)}（${escapeHTML(e.status)}）
         </option>
       `).join("");
 
-    if (current) {
-      select.value = current;
-    }
+    if (current) select.value = current;
   }
 
-  // 選擇設備
   function selectEquipment() {
-
     const id = document.getElementById("equipmentSelect").value;
-
     document.getElementById("equipmentId").value = id;
-
     const item = equipmentList.find(e => e.id === id);
-
-    if (item) {
-      showEquipmentInfo(item);
-    }
+    if (item) showEquipmentInfo(item);
   }
 
-  // 顯示設備資訊
   function showEquipmentInfo(data) {
-
-    document.getElementById("infoId").textContent =
-      data.id || "---";
-
-    document.getElementById("infoName").textContent =
-      data.equipmentName || "---";
-
-    document.getElementById("infoBrand").textContent =
-      data.brand || "---";
+    document.getElementById("infoId").textContent = data.id || "---";
+    document.getElementById("infoName").textContent = data.equipmentName || "---";
+    document.getElementById("infoBrand").textContent = data.brand || "---";
 
     const status = document.getElementById("infoStatus");
-
     status.textContent = data.status || "---";
+    status.className = "info-value " + (data.status === "可借用" ? "available" : data.status === "借出中" ? "borrowed" : "");
 
-    status.className =
-      "info-value " +
-      (
-        data.status === "可借用"
-          ? "available"
-          : data.status === "借出中"
-            ? "borrowed"
-            : ""
-      );
-
-    document.getElementById("infoPerson").textContent =
-      data.person || "---";
-
-    document.getElementById("infoTime").textContent =
-      data.time || "---";
+    document.getElementById("infoPerson").textContent = data.person || "---";
+    document.getElementById("infoTime").textContent = data.time || "---";
   }
 
-  // 提交借還
   async function submitEquipment() {
-
     if (processing) return;
+    const name = document.getElementById("personName").value.trim();
+    const id = document.getElementById("equipmentId").value.trim();
 
-    const name = document
-      .getElementById("personName")
-      .value.trim();
-
-    const id = document
-      .getElementById("equipmentId")
-      .value.trim();
-
-    if (!name) {
-      return showMessage("請先輸入姓名！", "error");
-    }
-
-    if (!id) {
-      return showMessage("請先選擇或掃描設備！", "error");
-    }
+    if (!name) return showMessage("請先輸入姓名！", "error");
+    if (!id) return showMessage("請先選擇或掃描設備！", "error");
 
     await executeEquipment(id, name);
   }
 
-  // 執行借用或歸還
   async function executeEquipment(id, name) {
-
     if (processing) return;
-
     processing = true;
 
     const btn = document.getElementById("submitBtn");
-
     btn.disabled = true;
     btn.textContent = "處理中...";
-
     showMessage("正在處理，請稍候...", "info");
 
     try {
+      const result = await apiCall({
+        action: currentMode,
+        id: id,
+        name: name
+      });
 
-      const fn =
-        currentMode === "borrow"
-          ? "apiBorrowEquipment"
-          : "apiReturnEquipment";
-
-      const result = await gasCall(fn, id, name);
-
-      if (!result || !result.success) {
-        throw new Error(
-          result ? result.message : "操作失敗"
-        );
-      }
+      if (!result || !result.success) throw new Error(result ? result.message : "操作失敗");
 
       showEquipmentInfo(result);
-
       showMessage(result.message, "success");
-
       document.getElementById("equipmentId").value = "";
       document.getElementById("equipmentSelect").value = "";
 
       await refreshData();
-
     } catch (err) {
-
-      showMessage(
-        err.message || "系統連線失敗",
-        "error"
-      );
-
+      showMessage(err.message || "系統連線失敗", "error");
     } finally {
-
       processing = false;
       btn.disabled = false;
-
-      btn.textContent =
-        currentMode === "borrow"
-          ? "確認借用"
-          : "確認歸還";
+      btn.textContent = currentMode === "borrow" ? "確認借用" : "確認歸還";
     }
   }
 
-  // 更新資料
   async function refreshData() {
-
-    const result = await gasCall("getInitialData");
-
-    if (!result || !result.success) {
-      throw new Error(
-        result ? result.message : "更新資料失敗"
-      );
-    }
+    const result = await apiCall({ action: "getInitialData" });
+    if (!result || !result.success) throw new Error(result ? result.message : "更新資料失敗");
 
     equipmentList = result.equipment || [];
     historyList = result.records || [];
-
     updateEquipmentOptions();
     renderHistory();
     updateStats();
   }
 
-  // 開啟 QR Code 掃描
   async function startScanner() {
-
     if (scannerRunning) return;
-
     if (typeof Html5Qrcode === "undefined") {
-      return showMessage(
-        "QR Code 掃描套件載入失敗。",
-        "error"
-      );
+      return showMessage("QR Code 掃描套件載入失敗。", "error");
     }
 
     try {
-
       scanner = new Html5Qrcode("reader");
-
       await scanner.start(
         { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: {
-            width: 240,
-            height: 240
-          }
-        },
+        { fps: 15, qrbox: { width: 250, height: 250 } },
         onScanSuccess,
         () => {}
       );
-
       scannerRunning = true;
-
       document.getElementById("startBtn").disabled = true;
       document.getElementById("stopBtn").disabled = false;
-
-      showMessage(
-        "相機已開啟，請將 QR Code 對準掃描框。",
-        "info"
-      );
-
+      showMessage("相機已開啟，請將 QR Code 對準掃描框。", "info");
     } catch (err) {
-
       scanner = null;
-
-      showMessage(
-        "無法開啟相機，請允許相機權限，並使用 HTTPS 網址。",
-        "error"
-      );
+      showMessage("無法開啟相機，請允許相機權限。", "error");
     }
   }
 
-  // 關閉 QR Code 掃描
   async function stopScanner() {
-
     if (!scanner || !scannerRunning) return;
-
     try {
-
       await scanner.stop();
       await scanner.clear();
-
     } catch (err) {
-
       console.warn(err);
-
     }
-
     scanner = null;
     scannerRunning = false;
-
     document.getElementById("startBtn").disabled = false;
     document.getElementById("stopBtn").disabled = true;
   }
 
-  // QR Code 掃描成功
   async function onScanSuccess(decodedText) {
-
     const now = Date.now();
-
-    if (processing || now - lastScanTime < 1800) {
-      return;
-    }
-
+    if (processing || now - lastScanTime < 1800) return;
     lastScanTime = now;
 
     const id = String(decodedText).trim();
-
     document.getElementById("equipmentId").value = id;
 
     const item = equipmentList.find(e => e.id === id);
-
-    if (item) {
-      showEquipmentInfo(item);
-    }
+    if (item) showEquipmentInfo(item);
 
     await stopScanner();
-
     await submitEquipment();
   }
 
-  // 借還紀錄篩選
   function setHistoryFilter(filter) {
-
     historyFilter = filter;
-
-    document.getElementById("allFilter")
-      .classList.toggle("active", filter === "all");
-
-    document.getElementById("outFilter")
-      .classList.toggle("active", filter === "outstanding");
-
+    document.getElementById("allFilter").classList.toggle("active", filter === "all");
+    document.getElementById("outFilter").classList.toggle("active", filter === "outstanding");
     renderHistory();
   }
 
-  // 載入借還紀錄
   async function loadHistory() {
-
     const body = document.getElementById("historyBody");
-
-    body.innerHTML = `
-      <tr>
-        <td colspan="8" class="empty">
-          正在載入紀錄...
-        </td>
-      </tr>
-    `;
+    body.innerHTML = '<tr><td colspan="8" class="empty">正在載入紀錄...</td></tr>';
 
     try {
-
-      const result = await gasCall(
-        "getBorrowHistory",
-        "all"
-      );
-
-      if (!result || !result.success) {
-        throw new Error(
-          result ? result.message : "讀取紀錄失敗"
-        );
-      }
+      const result = await apiCall({ action: "getHistory", filter: "all" });
+      if (!result || !result.success) throw new Error(result ? result.message : "讀取紀錄失敗");
 
       historyList = result.records || [];
-
       renderHistory();
       updateStats();
-
     } catch (err) {
-
-      body.innerHTML = `
-        <tr>
-          <td colspan="8" class="empty">
-            ${escapeHTML(err.message)}
-          </td>
-        </tr>
-      `;
+      body.innerHTML = `<tr><td colspan="8" class="empty">${escapeHTML(err.message)}</td></tr>`;
     }
   }
 
-  // 顯示借還紀錄
   function renderHistory() {
-
     const search = document.getElementById("historySearch");
-
-    const keyword = search
-      ? search.value.trim().toLowerCase()
-      : "";
+    const keyword = search ? search.value.trim().toLowerCase() : "";
 
     const rows = historyList.filter(r => {
-
       const outstanding = !r.returnTime;
-
-      if (
-        historyFilter === "outstanding" &&
-        !outstanding
-      ) {
-        return false;
-      }
-
-      const text = [
-        r.id,
-        r.equipmentName,
-        r.brand,
-        r.borrower,
-        r.returner
-      ].join(" ").toLowerCase();
-
+      if (historyFilter === "outstanding" && !outstanding) return false;
+      const text = [r.id, r.equipmentName, r.brand, r.borrower, r.returner].join(" ").toLowerCase();
       return !keyword || text.includes(keyword);
     });
 
     const body = document.getElementById("historyBody");
-
     if (!rows.length) {
-
-      body.innerHTML = `
-        <tr>
-          <td colspan="8" class="empty">
-            目前沒有符合條件的借還紀錄
-          </td>
-        </tr>
-      `;
-
+      body.innerHTML = '<tr><td colspan="8" class="empty">目前沒有符合條件的借還紀錄</td></tr>';
       return;
     }
 
@@ -843,31 +458,16 @@
     `).join("");
   }
 
-  // 統計數字
   function updateStats() {
-
     const total = historyList.length;
+    const outstanding = historyList.filter(r => !r.returnTime).length;
 
-    const outstanding = historyList.filter(
-      r => !r.returnTime
-    ).length;
-
-    document.getElementById("totalCount").textContent =
-      total;
-
-    document.getElementById("outstandingCount").textContent =
-      outstanding;
-
-    document.getElementById("returnedCount").textContent =
-      total - outstanding;
+    document.getElementById("totalCount").textContent = total;
+    document.getElementById("outstandingCount").textContent = outstanding;
+    document.getElementById("returnedCount").textContent = total - outstanding;
   }
 
-  // 網頁載入時執行
-  document.addEventListener(
-    "DOMContentLoaded",
-    loadInitialData
-  );
-
+  document.addEventListener("DOMContentLoaded", loadInitialData);
 </script>
 </body>
 </html>
