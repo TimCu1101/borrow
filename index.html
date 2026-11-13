@@ -176,7 +176,7 @@
 
 <script>
   // ⚠️ 請填入您發布的 GAS 網頁應用程式 URL（/exec 結尾）
-  const GAS_API_URL = "AKfycbxobDlSeFUWBSbCCijUWDI8hrKqul_CcUb__0Wu3bBvnXUSqoX1k9zk6rSuSn2OceXe";
+  const GAS_API_URL = "https://script.google.com/macros/s/AKfycbz22YkMiPQ898V1KmkQ5E3nMhHzQUTUQDG3TbMdE7CmJs42JbDufwyZjwM6XkxiWUXb/exec";
 
   let currentMode = "borrow";
   let scanner = null;
@@ -189,7 +189,7 @@
 
   // 使用標準 fetch 與 GAS API 通訊
   async function apiCall(payload) {
-    if (GAS_API_URL.includes("AKfycbxobDlSeFUWBSbCCijUWDI8hrKqul_CcUb__0Wu3bBvnXUSqoX1k9zk6rSuSn2OceXe")) {
+    if (!GAS_API_URL || !GAS_API_URL.startsWith("https://script.google.com/")) {
       throw new Error("請先在 index.html 中設定有效的 GAS_API_URL。");
     }
 
