@@ -1,0 +1,138 @@
+v<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>使用者登入 - 設備借還管理系統</title>
+  <style>
+    body {
+      font-family: "Microsoft JhengHei", sans-serif;
+      background-color: #f3f4f6;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+    .login-card {
+      background: #ffffff;
+      padding: 28px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 380px;
+    }
+    h2 {
+      margin-top: 0;
+      color: #1e40af;
+      text-align: center;
+    }
+    .form-group {
+      margin-bottom: 14px;
+      display: flex;
+      flex-direction: column;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 0.95rem;
+    }
+    input {
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 6px;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    button:disabled { opacity: 0.6; cursor: not-allowed; }
+    .msg {
+      margin-top: 14px;
+      text-align: center;
+      font-weight: bold;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h2>🔐 系統登入</h2>
+    <div class="form-group">
+      <label for="userIdInput">帳號 (User ID)</label>
+      <input type="text" id="userIdInput" placeholder="請輸入帳號" />
+    </div>
+    <div class="form-group">
+      <label for="passwordInput">密碼</label>
+      <input type="password" id="passwordInput" placeholder="請輸入密碼" />
+    </div>
+    <button id="loginBtn" onclick="doLogin()">登入</button>
+    <div id="loginMsg" class="msg"></div>
+  </div>
+
+  <script>
+    // ⚠️ 請換成你的 Google Apps Script 部署網址
+    const API_URL = "https://script.google.com/macros/s/你的部署ID/exec";
+
+    // 支援按 Enter 鍵直接登入
+    document.getElementById("passwordInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doLogin();
+    });
+
+    async function doLogin() {
+      const userId = document.getElementById("userIdInput").value.trim();
+      const password = document.getElementById("passwordInput").value.trim();
+      const msgEl = document.getElementById("loginMsg");
+      const btn = document.getElementById("loginBtn");
+
+      if (!userId || !password) {
+        msgEl.style.color = "#dc2626";
+        msgEl.textContent = "請輸入帳號與密碼。";
+        return;
+      }
+
+      btn.disabled = true;
+      msgEl.style.color = "#2563eb";
+      msgEl.textContent = "驗證中...";
+
+      try {
+        const res = await fetch(API_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "login", userId, password })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          // 寫入 localStorage，其他分頁會立刻收到通知
+          localStorage.setItem("loggedInUser", JSON.stringify(data.user));
+          msgEl.style.color = "#059669";
+          msgEl.innerHTML = `歡迎，${data.user.name}！登入成功。<br>借還分頁已自動同步，您現在可以關閉此分頁。`;
+          
+          // 若是由原分頁透過 window.open 開啟，1.5 秒後嘗試自動關閉此分頁
+          setTimeout(() => {
+            window.close();
+          }, 1500);
+        } else {
+          msgEl.style.color = "#dc2626";
+          msgEl.textContent = data.message;
+        }
+      } catch (err) {
+        msgEl.style.color = "#dc2626";
+        msgEl.textContent = "連線失敗：" + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
