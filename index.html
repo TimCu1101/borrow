@@ -32,6 +32,13 @@
       border-bottom: 2px solid #dbeafe;
       padding-bottom: 8px;
     }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
     .form-row {
       display: flex;
       gap: 10px;
@@ -71,17 +78,7 @@
     .btn-primary { background-color: #2563eb; color: #fff; }
     .btn-borrow  { background-color: #059669; color: #fff; }
     .btn-return  { background-color: #d97706; color: #fff; }
-    .btn-logout  { background-color: #6b7280; color: #fff; padding: 6px 12px; font-size: 0.9rem; }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-    .user-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #eff6ff;
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid #bfdbfe;
-    }
+    .btn-logout  { background-color: #6b7280; color: #fff; padding: 8px 14px; font-size: 0.9rem; }
     .disabled-section {
       opacity: 0.55;
       pointer-events: none;
@@ -110,37 +107,23 @@
 <body>
   <div class="container">
 
-    <!-- 1. 最上方：使用者登入區塊 -->
+    <!-- 最上方：登入狀態列（點擊按鈕另開分頁登入） -->
     <div class="card">
-      <h2>🔐 使用者登入</h2>
-
-      <!-- 未登入時顯示的登入表單 -->
-      <div id="loginFormArea">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="userIdInput">帳號 (User ID)</label>
-            <input type="text" id="userIdInput" placeholder="請輸入帳號" />
-          </div>
-          <div class="form-group">
-            <label for="passwordInput">密碼</label>
-            <input type="password" id="passwordInput" placeholder="請輸入密碼" />
-          </div>
-        </div>
-        <button class="btn-primary" id="loginBtn" onclick="handleUserLogin()">登入系統</button>
-        <div id="loginMsg" class="status-msg"></div>
+      <div class="top-bar" id="notLoggedInBar">
+        <span>⚠️ 目前尚未登入，請先登入後再進行借還登記。</span>
+        <button class="btn-primary" onclick="openLoginTab()">另開分頁登入</button>
       </div>
 
-      <!-- 已登入時顯示的使用者資訊列 -->
-      <div id="loggedInBar" class="user-bar" style="display: none;">
+      <div class="top-bar" id="loggedInBar" style="display: none;">
         <div>
-          目前登入：<strong id="displayUserName"></strong>
+          ✅ 目前登入：<strong id="displayUserName"></strong>
           （帳號：<span id="displayUserId"></span> / 權限：<span id="displayUserRole"></span>）
         </div>
         <button class="btn-logout" onclick="handleLogout()">登出</button>
       </div>
     </div>
 
-    <!-- 2. 下方：設備借用與歸還操作區塊（未登入前鎖定） -->
+    <!-- 中間：設備借還登記區 -->
     <div class="card disabled-section" id="operationCard">
       <h2>📦 設備借還登記</h2>
       <div class="form-row">
@@ -160,7 +143,7 @@
       <div id="actionMsg" class="status-msg"></div>
     </div>
 
-    <!-- 3. 近期借還紀錄 -->
+    <!-- 下方：近期借還紀錄 -->
     <div class="card">
       <h2>📋 近期借還紀錄</h2>
       <table>
@@ -185,90 +168,66 @@
   <script>
     // ⚠️ 請換成你的 Google Apps Script 部署網址
     const API_URL = "https://script.google.com/macros/s/AKfycbz22YkMiPQ898V1KmkQ5E3nMhHzQUTUQDG3TbMdE7CmJs42JbDufwyZjwM6XkxiWUXb/exec";
-
     let currentUser = null;
 
-    // 頁面載入時初始化資料與檢查登入狀態
+    // 1. 頁面載入時檢查是否已有登入狀態
     window.addEventListener("DOMContentLoaded", () => {
-      const savedUser = sessionStorage.getItem("loggedInUser");
-      if (savedUser) {
-        applyLoginState(JSON.parse(savedUser));
-      }
+      syncUserFromStorage();
       loadInitialData();
     });
 
-    // 呼叫後端 API 的共用函式
+    // 2. 關鍵：監聽其他分頁對 localStorage 的修改（登入分頁一成功，這裡立刻同步）
+    window.addEventListener("storage", (event) => {
+      if (event.key === "loggedInUser") {
+        syncUserFromStorage();
+      }
+    });
+
+    // 另開新分頁開啟 login.html
+    function openLoginTab() {
+      window.open("login.html", "_blank");
+    }
+
+    // 從 localStorage 讀取並套用登入者資訊
+    function syncUserFromStorage() {
+      const saved = localStorage.getItem("loggedInUser");
+      if (saved) {
+        const user = JSON.parse(saved);
+        currentUser = user;
+        document.getElementById("notLoggedInBar").style.display = "none";
+        document.getElementById("loggedInBar").style.display = "flex";
+        document.getElementById("displayUserName").textContent = user.name;
+        document.getElementById("displayUserId").textContent = user.user_id;
+        document.getElementById("displayUserRole").textContent = user.role;
+
+        // 自動將登入者設為借閱人 / 歸還人
+        document.getElementById("operatorName").value = user.name;
+        document.getElementById("operationCard").classList.remove("disabled-section");
+      } else {
+        currentUser = null;
+        document.getElementById("notLoggedInBar").style.display = "flex";
+        document.getElementById("loggedInBar").style.display = "none";
+        document.getElementById("operatorName").value = "";
+        document.getElementById("operationCard").classList.add("disabled-section");
+      }
+    }
+
+    // 登出（所有分頁也會同步登出）
+    function handleLogout() {
+      localStorage.removeItem("loggedInUser");
+      syncUserFromStorage();
+    }
+
     async function callApi(payload) {
       const response = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, // 避免觸發 CORS 預檢請求
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(payload)
       });
       return await response.json();
     }
 
-    // 執行登入
-    async function handleUserLogin() {
-      const userId = document.getElementById("userIdInput").value.trim();
-      const password = document.getElementById("passwordInput").value.trim();
-      const msgEl = document.getElementById("loginMsg");
-      const btn = document.getElementById("loginBtn");
-
-      if (!userId || !password) {
-        msgEl.style.color = "#dc2626";
-        msgEl.textContent = "請輸入帳號與密碼。";
-        return;
-      }
-
-      btn.disabled = true;
-      msgEl.style.color = "#2563eb";
-      msgEl.textContent = "驗證中...";
-
-      try {
-        const res = await callApi({ action: "login", userId, password });
-        if (res.success) {
-          sessionStorage.setItem("loggedInUser", JSON.stringify(res.user));
-          applyLoginState(res.user);
-          msgEl.textContent = "";
-        } else {
-          msgEl.style.color = "#dc2626";
-          msgEl.textContent = res.message;
-        }
-      } catch (err) {
-        msgEl.style.color = "#dc2626";
-        msgEl.textContent = "連線失敗：" + err.message;
-      } finally {
-        btn.disabled = false;
-      }
-    }
-
-    // 套用登入狀態：顯示上方使用者列、解鎖下方表單並自動填入借還人姓名
-    function applyLoginState(user) {
-      currentUser = user;
-      document.getElementById("loginFormArea").style.display = "none";
-      document.getElementById("loggedInBar").style.display = "flex";
-      document.getElementById("displayUserName").textContent = user.name;
-      document.getElementById("displayUserId").textContent = user.user_id;
-      document.getElementById("displayUserRole").textContent = user.role;
-
-      // 自動帶入借閱人 / 歸還人
-      document.getElementById("operatorName").value = user.name;
-      document.getElementById("operationCard").classList.remove("disabled-section");
-      document.getElementById("equipmentId").focus();
-    }
-
-    // 登出
-    function handleLogout() {
-      currentUser = null;
-      sessionStorage.removeItem("loggedInUser");
-      document.getElementById("loginFormArea").style.display = "block";
-      document.getElementById("loggedInBar").style.display = "none";
-      document.getElementById("passwordInput").value = "";
-      document.getElementById("operatorName").value = "";
-      document.getElementById("operationCard").classList.add("disabled-section");
-    }
-
-    // 執行借用或歸還（直接使用登入者姓名）
+    // 送出借用或歸還（直接使用 currentUser.name）
     async function submitEquipmentAction(actionType) {
       if (!currentUser) {
         alert("請先登入系統！");
@@ -291,14 +250,14 @@
         const res = await callApi({
           action: actionType,
           id: equipmentId,
-          name: currentUser.name // 直接傳送登入者姓名
+          name: currentUser.name
         });
 
         if (res.success) {
           msgEl.style.color = "#059669";
           msgEl.textContent = `${res.message}（${res.equipmentName} / 操作人：${res.person}）`;
           document.getElementById("equipmentId").value = "";
-          loadInitialData(); // 重新整理紀錄列表
+          loadInitialData();
         } else {
           msgEl.style.color = "#dc2626";
           msgEl.textContent = res.message;
@@ -309,7 +268,6 @@
       }
     }
 
-    // 讀取初始資料與歷史紀錄
     async function loadInitialData() {
       try {
         const res = await callApi({ action: "getInitialData" });
