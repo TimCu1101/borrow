@@ -5,7 +5,6 @@
 const CONFIG = {
   EQUIPMENT_SHEET: "Equipment_List",
   RECORD_SHEET: "Borrow_Records",
-  USER_SHEET: "Users",
   AVAILABLE: "可借用",
   BORROWED: "借出中",
   TIMEZONE: "Asia/Taipei",
@@ -21,9 +20,6 @@ function doPost(e) {
     let result;
 
     switch (action) {
-      case "login":
-        result = handleLogin(contents.userId, contents.password);
-        break;
       case "getInitialData":
         result = getInitialData();
         break;
@@ -62,55 +58,6 @@ function getSpreadsheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   if (!ss) throw new Error("無法取得試算表。");
   return ss;
-}
-
-// 處理使用者登入驗證
-function handleLogin(userId, password) {
-  const cleanUserId = String(userId || "").trim();
-  const cleanPassword = String(password || "").trim();
-
-  if (!cleanUserId) return { success: false, message: "請輸入帳號。" };
-  if (!cleanPassword) return { success: false, message: "請輸入密碼。" };
-
-  const ss = getSpreadsheet_();
-  const sheet = ss.getSheetByName(CONFIG.USER_SHEET);
-  if (!sheet) {
-    return { success: false, message: "找不到 " + CONFIG.USER_SHEET + " 使用者資料表。" };
-  }
-
-  const data = sheet.getDataRange().getDisplayValues();
-  // 欄位順序: [0]user_id, [1]name, [2]role, [3]status, [4]password
-  for (let i = 1; i < data.length; i++) {
-    const rowUserId = String(data[i][0]).trim();
-    const rowName   = String(data[i][1]).trim();
-    const rowRole   = String(data[i][2]).trim();
-    const rowStatus = String(data[i][3]).trim();
-    const rowPass   = String(data[i][4]).trim();
-
-    if (rowUserId === cleanUserId) {
-      // 1. 檢查帳號是否停用
-      if (rowStatus === "不啟用") {
-        return { success: false, message: "此帳號目前為「不啟用」狀態，無法登入。" };
-      }
-      // 2. 檢查密碼（相容試算表將 0000 轉為 0 的情況）
-      const normalizedRowPass = rowPass === "0" ? "0000" : rowPass.padStart(4, "0");
-      if (rowPass === cleanPassword || normalizedRowPass === cleanPassword) {
-        return {
-          success: true,
-          message: "登入成功",
-          user: {
-            user_id: rowUserId,
-            name: rowName,
-            role: rowRole
-          }
-        };
-      } else {
-        return { success: false, message: "密碼錯誤，請重新輸入。" };
-      }
-    }
-  }
-
-  return { success: false, message: "找不到此帳號（user_id）。" };
 }
 
 // 建立或取得設備工作表
